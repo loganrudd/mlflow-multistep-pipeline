@@ -18,7 +18,7 @@ import six
 from mlflow.tracking.fluent import _get_experiment_id
 
 
-def _already_ran(entry_point_name, parameters, git_commit, experiment_id=None):
+def test_already_ran(entry_point_name, parameters, git_commit, experiment_id=None):
     """Best-effort detection of if a run with the given entrypoint name,
     parameters, and experiment id already ran. The run must have completed
     successfully and have at least the parameters provided.
