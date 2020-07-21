@@ -32,6 +32,6 @@ entry_points:
       als_max_iter: {type: int, default: 10}
       keras_hidden_units: {type: int, default: 20}
       max_row_limit: {type: int, default: 100000}
-    command: "python main.py --als-max-iter {als_max_iter} --keras-hidden-units {keras_hidden_units}
-                             --max-row-limit {max_row_limit}"
+    command: "python main.py --als_max_iter {als_max_iter} --keras_hidden_units {keras_hidden_units}
+                             --max_row_limit {max_row_limit}"
 

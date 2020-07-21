@@ -5,7 +5,6 @@ ALS model, and uses the ALS model to train a Keras neural network.
 See README.rst for more details.
 """
 
-import click
 import os
 
 
@@ -16,9 +15,10 @@ from mlflow.utils.logging_utils import eprint
 import six
 
 from mlflow.tracking.fluent import _get_experiment_id
+import argparse
 
 
-def test_already_ran(entry_point_name, parameters, git_commit, experiment_id=None):
+def _already_ran(entry_point_name, parameters, git_commit, experiment_id=None):
     """Best-effort detection of if a run with the given entrypoint name,
     parameters, and experiment id already ran. The run must have completed
     successfully and have at least the parameters provided.
@@ -68,10 +68,7 @@ def _get_or_run(entrypoint, parameters, git_commit, use_cache=True):
     return mlflow.tracking.MlflowClient().get_run(submitted_run.run_id)
 
 
-@click.command()
-@click.option("--als-max-iter", default=10, type=int)
-@click.option("--keras-hidden-units", default=20, type=int)
-@click.option("--max-row-limit", default=100000, type=int)
+
 def workflow(als_max_iter, keras_hidden_units, max_row_limit):
     # Note: The entrypoint names are defined in MLproject. The artifact directories
     # are documented by each step's .py file.
@@ -102,4 +99,10 @@ def workflow(als_max_iter, keras_hidden_units, max_row_limit):
 
 
 if __name__ == '__main__':
-    workflow()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-a', '--als_max_iter', default=10)
+    parser.add_argument('-k', '--keras_hidden_units', default=20)
+    parser.add_argument('-m', '--max_row_limit', default=100000)
+    args = parser.parse_args()
+
+    workflow(args.als_max_iter, args.keras_hidden_units, args.max_row_limit)
