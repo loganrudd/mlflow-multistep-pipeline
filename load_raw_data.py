@@ -11,47 +11,36 @@ import zipfile
 import pyspark
 import mlflow
 import argparse
-import dbutils
+from pyspark.sql.functions import *
 
-def load_raw_data(url):
-    '''
+def load_raw_data(data_path):
+
     with mlflow.start_run() as mlrun:
-        local_dir = tempfile.mkdtemp()
-        local_filename = os.path.join(local_dir, "loans.csv.zip")
-        print("Downloading %s to %s" % (url, local_filename))
-        r = requests.get(url, stream=True)
-        with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:  # filter out keep-alive new chunks
-                    f.write(chunk)
+        loans = spark.read.parquet(data_path)
+        print("Create bad loan label, this will include charged off, defaulted,"
+              "and late repayments on loans...")
+        loans = loans.filter(
+            loans.loan_status.isin(["Default", "Charged Off", "Fully Paid"]))\
+            .withColumn("bad_loan",
+                        (~(loans.loan_status == "Fully Paid")).cast("int"))
 
-        extracted_dir = os.path.join(local_dir, 'ml-20m')
-        print("Extracting %s into %s" % (local_filename, extracted_dir))
-        with zipfile.ZipFile(local_filename, 'r') as zip_ref:
-            zip_ref.extractall(local_dir)
-        
-        ratings_file = os.path.join(extracted_dir, 'loans.csv')
-
-        print("Uploading ratings: %s" % ratings_file)
-        mlflow.log_artifact(ratings_file, "ratings-csv-dir")
-    '''
-
-    # Pull data path and version from notebook params
-    dbutils.widgets.text(name="deltaVersion", defaultValue="",
-                         label="Table version, default=latest")
-    dbutils.widgets.text(name="deltaPath", defaultValue="", label="Table path")
-
-    data_version = None if dbutils.widgets.get("deltaVersion") == "" else int(
-        dbutils.widgets.get("deltaVersion"))
-    DELTA_TABLE_DEFAULT_PATH = "/ml/loan_stats.delta"
-    data_path = DELTA_TABLE_DEFAULT_PATH if dbutils.widgets.get(
-        "deltaPath") == "" else dbutils.widgets.get("deltaPath")
+        print("Casting numeric columns into the appropriate types...")
+        loans = loans.withColumn('issue_year',
+                                 substring(loans.issue_d, 5, 4).cast('double'))\
+            .withColumn('earliest_year',
+                        substring(loans.earliest_cr_line, 5, 4).cast('double'))\
+            .withColumn('total_pymnt', loans.total_pymnt.cast('double'))
+        loans = loans.withColumn('credit_length_in_years',
+                                 (loans.issue_year - loans.earliest_year))
+        loans.write.parquet("loans_processed.parquet")
+        mlflow.log_artifact("/dbfs/loans_processed.parquet/",
+                            "loans-processed-parquet")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-u', '--url',
-                        default="https://www.kaggle.com/wendykan/"
-                                "lending-club-loan-data?select=loan.csv")
+    parser.add_argument('-p', '--data_path',
+                        default="/databricks-datasets/samples/"
+                                "lending_club/parquet/")
     args = parser.parse_args()
 
-    load_raw_data(args.url)
+    load_raw_data(args.data_path)
