@@ -11,8 +11,7 @@ import zipfile
 import pyspark
 import mlflow
 import argparse
-
-/Users/logan.rudd/Work/miniconda3/envs/msFlow/bin/python/Install \ Certificates.command
+import dbutils
 
 def load_raw_data(url):
     '''
