@@ -4,13 +4,9 @@ First you must configure your Kaggle API credentials following the instructions
 here: https://github.com/Kaggle/kaggle-api
 
 """
-import requests
-import tempfile
-import os
-import zipfile
-import pyspark
 import mlflow
 import argparse
+import spark
 from pyspark.sql.functions import *
 
 def load_raw_data(data_path):
