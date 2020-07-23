@@ -5,32 +5,52 @@ import tempfile
 import os
 import pyspark
 import mlflow
-import click
+import argparse
+from pyspark.sql.functions import *
 
+"""
+with mlflow.start_run() as mlrun:
 
-@click.command(help="Given a CSV file (see load_raw_data), transforms it into Parquet "
-                    "in an mlflow artifact called 'ratings-parquet-dir'")
-@click.option("--ratings-csv")
-@click.option("--max-row-limit", default=10000,
-              help="Limit the data size to run comfortably on a laptop.")
-def etl_data(ratings_csv, max_row_limit):
+  print("------------------------------------------------------------------------------------------------")
+  
+  loans.write.parquet("loans_processed.parquet")
+  mlflow.log_artifact("/dbfs/loans_processed.parquet/", "loans-processed-parquet")
+"""
+# file:///Users/logan.rudd/Work/repos/mlflow_multistep_pipeline/mlruns/0/297ca0ec1f634e3ea2d7f3631d76b310/artifacts/loans-raw-csv-dir
+def etl_data(loans_csv_uri):
     with mlflow.start_run() as mlrun:
         tmpdir = tempfile.mkdtemp()
-        ratings_parquet_dir = os.path.join(tmpdir, 'ratings-parquet')
+        loans_parquet_dir = os.path.join(tmpdir, 'loans-parquet')
         spark = pyspark.sql.SparkSession.builder.getOrCreate()
-        print("Converting ratings CSV %s to Parquet %s" % (ratings_csv, ratings_parquet_dir))
-        ratings_df = spark.read \
-            .option("header", "true") \
-            .option("inferSchema", "true") \
-            .csv(ratings_csv) \
-            .drop("timestamp")  # Drop unused column
-        ratings_df.show()
-        if max_row_limit != -1:
-            ratings_df = ratings_df.limit(max_row_limit)
-        ratings_df.write.parquet(ratings_parquet_dir)
-        print("Uploading Parquet ratings: %s" % ratings_parquet_dir)
-        mlflow.log_artifacts(ratings_parquet_dir, "ratings-parquet-dir")
+        print("Converting ratings CSV %s to Parquet %s" % (loans_csv_uri,
+                                                           loans_parquet_dir))
+        loans = spark.read.option("header", "true")\
+            .option("inferSchema", "true").csv(loans_csv_uri)
+
+        print("Create bad loan label, this will include charged off, defaulted,"
+              "and late repayments on loans...")
+        loans = loans.filter(
+            loans.loan_status.isin(["Default", "Charged Off", "Fully Paid"]))\
+            .withColumn("bad_loan",
+                        (~(loans.loan_status == "Fully Paid")).cast("int"))
+
+        print("Casting numeric columns into the appropriate types...")
+        loans = loans.withColumn('issue_year',
+                                 substring(loans.issue_d, 5, 4).cast('double'))\
+            .withColumn('earliest_year',
+                        substring(loans.earliest_cr_line, 5, 4).cast('double'))\
+            .withColumn('total_pymnt', loans.total_pymnt.cast('double'))
+        loans = loans.withColumn('credit_length_in_years',
+                                 (loans.issue_year - loans.earliest_year))
+
+        loans.write.parquet(loans_parquet_dir)
+        print("Uploading Parquet loans: %s" % loans_parquet_dir)
+        mlflow.log_artifacts(loans_parquet_dir, "loans-processed-parquet-dir")
 
 
 if __name__ == '__main__':
-    etl_data()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-u", "--loans_csv_uri")
+    args = parser.parse_args()
+
+    etl_data(args.loans_csv_uri)

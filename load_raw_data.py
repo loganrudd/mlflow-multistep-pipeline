@@ -28,7 +28,15 @@ def load_raw_data(url):
         loans_file = os.path.join(extracted_dir, 'LoanStats3a.csv')
         print(os.path.exists(loans_file))
         print("Uploading loans: %s" % loans_file)
-        mlflow.log_artifact(loans_file, "loans-raw-csv-dir")
+
+        # remove first line from file
+        with open(loans_file, 'r') as f:
+            new_file = os.path.join(extracted_dir, 'loans.csv')
+            with open(new_file, 'w') as f1:
+                next(f)  # skip header line
+                for line in f:
+                    f1.write(line)
+        mlflow.log_artifact(new_file, "loans-raw-csv-dir")
 
 
 if __name__ == '__main__':
