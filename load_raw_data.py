@@ -1,42 +1,40 @@
 """
-Downloads the LendingClub dataset from Kaggle and saves it as an artifact.
-First you must configure your Kaggle API credentials following the instructions
-here: https://github.com/Kaggle/kaggle-api
-
+Downloads the MovieLens dataset and saves it as an artifact
 """
+import requests
+import tempfile
+import os
+import zipfile
 import mlflow
 import argparse
-import spark
-from pyspark.sql.functions import *
 
-def load_raw_data(data_path):
 
+def load_raw_data(url):
     with mlflow.start_run() as mlrun:
-        loans = spark.read.parquet(data_path)
-        print("Create bad loan label, this will include charged off, defaulted,"
-              "and late repayments on loans...")
-        loans = loans.filter(
-            loans.loan_status.isin(["Default", "Charged Off", "Fully Paid"]))\
-            .withColumn("bad_loan",
-                        (~(loans.loan_status == "Fully Paid")).cast("int"))
+        local_dir = tempfile.mkdtemp()
+        local_filename = os.path.join(local_dir, "LoanStats3a.csv.zip")
+        print("Downloading %s to %s" % (url, local_filename))
+        r = requests.get(url, verify=False, stream=True)
+        with open(local_filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:  # filter out keep-alive new chunks
+                    f.write(chunk)
 
-        print("Casting numeric columns into the appropriate types...")
-        loans = loans.withColumn('issue_year',
-                                 substring(loans.issue_d, 5, 4).cast('double'))\
-            .withColumn('earliest_year',
-                        substring(loans.earliest_cr_line, 5, 4).cast('double'))\
-            .withColumn('total_pymnt', loans.total_pymnt.cast('double'))
-        loans = loans.withColumn('credit_length_in_years',
-                                 (loans.issue_year - loans.earliest_year))
-        loans.write.parquet("loans_processed.parquet")
-        mlflow.log_artifact("/dbfs/loans_processed.parquet/",
-                            "loans-processed-parquet")
+        extracted_dir = os.path.join(local_dir, 'data/raw')
+        print("Extracting %s into %s" % (local_filename, extracted_dir))
+        with zipfile.ZipFile(local_filename, 'r') as zip_ref:
+            zip_ref.extractall(extracted_dir)
+
+        loans_file = os.path.join(extracted_dir, 'LoanStats3a.csv')
+        print(os.path.exists(loans_file))
+        print("Uploading loans: %s" % loans_file)
+        mlflow.log_artifact(loans_file, "loans-raw-csv-dir")
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--data_path',
-                        default="/databricks-datasets/samples/"
-                                "lending_club/parquet/")
+    parser.add_argument('-u', '--url',
+                        default="https://resources.lendingclub.com/LoanStats3a.csv.zip")
     args = parser.parse_args()
 
-    load_raw_data(args.data_path)
+    load_raw_data(args.url)
