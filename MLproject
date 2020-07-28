@@ -17,7 +17,7 @@ entry_points:
       config:
         type: path
         default: config.yaml
-    command: "python train_lgbm.py --loans_parquet_uri {loans_parquet_uri}"
+    command: "python train_lgbm.py --loans_parquet_uri {loans_parquet_uri} --config {config}"
 
   main:
     parameters:
