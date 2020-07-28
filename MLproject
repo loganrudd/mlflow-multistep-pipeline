@@ -11,26 +11,16 @@ entry_points:
       loans_csv_uri: path
     command: "python etl_data.py --loans_csv_uri {loans_csv_uri}"
 
-  als:
+  train_lgbm:
     parameters:
-      ratings_data: path
-      max_iter: {type: int, default: 10}
-      reg_param: {type: float, default: 0.1}
-      rank: {type: int, default: 12}
-    command: "python als.py --ratings-data {ratings_data} --max-iter {max_iter} --reg-param {reg_param} --rank {rank}"
-
-  train_keras:
-    parameters:
-      ratings_data: path
-      als_model_uri: string
-      hidden_units: {type: int, default: 20}
-    command: "python train_keras.py --ratings-data {ratings_data} --als-model-uri {als_model_uri} --hidden-units {hidden_units}"
+      loans_parquet_uri: path
+      config:
+        type: path
+        default: config.yaml
+    command: "python train_lgbm.py --loans_parquet_uri {loans_parquet_uri}"
 
   main:
     parameters:
-      als_max_iter: {type: int, default: 10}
-      keras_hidden_units: {type: int, default: 20}
-      max_row_limit: {type: int, default: 100000}
-    command: "python main.py --als_max_iter {als_max_iter} --keras_hidden_units {keras_hidden_units}
-                             --max_row_limit {max_row_limit}"
+      split_prop: {type: float, default: 0.8}
+    command: "python main.py --split_prop {split_prop}"
 

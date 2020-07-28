@@ -8,14 +8,7 @@ import mlflow
 import argparse
 from pyspark.sql.functions import *
 
-"""
-with mlflow.start_run() as mlrun:
 
-  print("------------------------------------------------------------------------------------------------")
-  
-  loans.write.parquet("loans_processed.parquet")
-  mlflow.log_artifact("/dbfs/loans_processed.parquet/", "loans-processed-parquet")
-"""
 # file:///Users/logan.rudd/Work/repos/mlflow_multistep_pipeline/mlruns/0/297ca0ec1f634e3ea2d7f3631d76b310/artifacts/loans-raw-csv-dir
 def etl_data(loans_csv_uri):
     with mlflow.start_run() as mlrun:
@@ -38,10 +31,12 @@ def etl_data(loans_csv_uri):
         loans = loans.withColumn('issue_year',
                                  substring(loans.issue_d, 5, 4).cast('double'))\
             .withColumn('earliest_year',
-                        substring(loans.earliest_cr_line, 5, 4).cast('double'))\
-            .withColumn('total_pymnt', loans.total_pymnt.cast('double'))
+                        substring(loans.earliest_cr_line, 5, 4).cast('double'))
         loans = loans.withColumn('credit_length_in_years',
                                  (loans.issue_year - loans.earliest_year))
+
+        for column in loans.columns:
+            loans = loans.withColumn(column, loans[column].cast('double'))
 
         loans.write.parquet(loans_parquet_dir)
         print("Uploading Parquet loans: %s" % loans_parquet_dir)

@@ -6,8 +6,6 @@ See README.rst for more details.
 """
 
 import os
-
-
 import mlflow
 from mlflow.utils import mlflow_tags
 from mlflow.entities import RunStatus
@@ -55,54 +53,46 @@ def _already_ran(entry_point_name, parameters, git_commit, experiment_id=None):
     return None
 
 
-# TODO(aaron): This is not great because it doesn't account for:
+# TODO: This is not great because it doesn't account for:
 # - changes in code
 # - changes in dependant steps
 def _get_or_run(entrypoint, parameters, git_commit, use_cache=True):
     existing_run = _already_ran(entrypoint, parameters, git_commit)
     if use_cache and existing_run:
-        print("Found existing run for entrypoint=%s and parameters=%s" % (entrypoint, parameters))
+        print("Found existing run for entrypoint=%s and parameters=%s"
+              % (entrypoint, parameters))
         return existing_run
-    print("Launching new run for entrypoint=%s and parameters=%s" % (entrypoint, parameters))
+    print("Launching new run for entrypoint=%s and parameters=%s"
+          % (entrypoint, parameters))
     submitted_run = mlflow.run(".", entrypoint, parameters=parameters)
     return mlflow.tracking.MlflowClient().get_run(submitted_run.run_id)
 
 
 
-def workflow(als_max_iter, keras_hidden_units, max_row_limit):
+def workflow(split_prop):
     # Note: The entrypoint names are defined in MLproject. The artifact directories
     # are documented by each step's .py file.
     with mlflow.start_run() as active_run:
         os.environ['SPARK_CONF_DIR'] = os.path.abspath('.')
         git_commit = active_run.data.tags.get(mlflow_tags.MLFLOW_GIT_COMMIT)
         load_raw_data_run = _get_or_run("load_raw_data", {}, git_commit)
-        ratings_csv_uri = os.path.join(load_raw_data_run.info.artifact_uri, "ratings-csv-dir")
+        loans_csv_uri = os.path.join(load_raw_data_run.info.artifact_uri,
+                                     "loans-raw-csv-dir")
         etl_data_run = _get_or_run("etl_data",
-                                   {"ratings_csv": ratings_csv_uri,
-                                    "max_row_limit": max_row_limit},
+                                   {"loans_csv_uri": loans_csv_uri},
                                    git_commit)
-        ratings_parquet_uri = os.path.join(etl_data_run.info.artifact_uri, "ratings-parquet-dir")
+        loans_parquet_uri = os.path.join(etl_data_run.info.artifact_uri,
+                                         "loans-processed-parquet-dir")
 
-        # We specify a spark-defaults.conf to override the default driver memory. ALS requires
-        # significant memory. The driver memory property cannot be set by the application itself.
-        als_run = _get_or_run("als",
-                              {"ratings_data": ratings_parquet_uri, "max_iter": str(als_max_iter)},
+        als_run = _get_or_run("train_lgbm",
+                              {"loans_parquet_uri": loans_parquet_uri,
+                               "split_prop": split_prop},
                               git_commit)
-        als_model_uri = os.path.join(als_run.info.artifact_uri, "als-model")
-
-        keras_params = {
-            "ratings_data": ratings_parquet_uri,
-            "als_model_uri": als_model_uri,
-            "hidden_units": keras_hidden_units,
-        }
-        _get_or_run("train_keras", keras_params, git_commit, use_cache=False)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-a', '--als_max_iter', default=10)
-    parser.add_argument('-k', '--keras_hidden_units', default=20)
-    parser.add_argument('-m', '--max_row_limit', default=100000)
+    parser.add_argument('-s', '--split_prop', default=0.8, type=float)
     args = parser.parse_args()
 
-    workflow(args.als_max_iter, args.keras_hidden_units, args.max_row_limit)
+    workflow(args.split_prop)

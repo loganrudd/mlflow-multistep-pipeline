@@ -29,7 +29,7 @@ def load_raw_data(url):
         print(os.path.exists(loans_file))
         print("Uploading loans: %s" % loans_file)
 
-        # remove first line from file
+        # remove first line from file to make it easy to read
         with open(loans_file, 'r') as f:
             new_file = os.path.join(extracted_dir, 'loans.csv')
             with open(new_file, 'w') as f1:
