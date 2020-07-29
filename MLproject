@@ -1,4 +1,4 @@
-name: mlflow_multistep_pipeline
+name: mlflow-multistep-pipeline
 
 conda_env: conda.yaml
 

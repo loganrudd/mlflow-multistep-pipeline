@@ -9,7 +9,7 @@ import argparse
 from pyspark.sql.functions import *
 
 
-# file:///Users/logan.rudd/Work/repos/mlflow_multistep_pipeline/mlruns/0/297ca0ec1f634e3ea2d7f3631d76b310/artifacts/loans-raw-csv-dir
+# file:///Users/logan.rudd/Work/repos/mlflow-multistep-pipeline/mlruns/0/297ca0ec1f634e3ea2d7f3631d76b310/artifacts/loans-raw-csv-dir
 def etl_data(loans_csv_uri):
     with mlflow.start_run() as mlrun:
         tmpdir = tempfile.mkdtemp()
