@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/logan.rudd/Work/repos/mlflow-multistep-pipeline/mlruns/0/44c8343bb5b74e7dba105ea0ba7b3bf0/artifacts
+end_time: 1596494874628
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: 44c8343bb5b74e7dba105ea0ba7b3bf0
+run_uuid: 44c8343bb5b74e7dba105ea0ba7b3bf0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1596494870104
+status: 3
+tags: []
+user_id: logan.rudd

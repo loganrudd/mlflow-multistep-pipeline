@@ -11,7 +11,7 @@ from pyspark.sql.functions import *
 
 # file:///Users/logan.rudd/Work/repos/mlflow-multistep-pipeline/mlruns/0/297ca0ec1f634e3ea2d7f3631d76b310/artifacts/loans-raw-csv-dir
 def etl_data(loans_csv_uri):
-    with mlflow.start_run() as mlrun:
+    with mlflow.start_run(nested=True) as mlrun:
         tmpdir = tempfile.mkdtemp()
         loans_parquet_dir = os.path.join(tmpdir, 'loans-parquet')
         spark = pyspark.sql.SparkSession.builder.getOrCreate()
