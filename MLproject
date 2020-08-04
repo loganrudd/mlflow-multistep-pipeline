@@ -11,6 +11,14 @@ entry_points:
       loans_csv_uri: path
     command: "python etl_data.py --loans_csv_uri {loans_csv_uri}"
 
+  train_lgbm:
+    parameters:
+      loans_parquet_uri: path
+      config:
+        type: path
+        default: config.yaml
+    command: "python train_lgbm.py --loans_parquet_uri {loans_parquet_uri} --config {config}"
+
   main:
     parameters:
       split_prop: {type: float, default: 0.8}

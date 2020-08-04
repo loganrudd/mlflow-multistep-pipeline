@@ -81,8 +81,7 @@ def workflow(split_prop):
         etl_data_run = _get_or_run("etl_data",
                                    {"loans_csv_uri": loans_csv_uri},
                                    git_commit)
-        print(split_prop)
-        '''
+
         loans_parquet_uri = os.path.join(etl_data_run.info.artifact_uri,
                                          "loans-processed-parquet-dir")
 
@@ -90,17 +89,6 @@ def workflow(split_prop):
                               {"loans_parquet_uri": loans_parquet_uri,
                                "split_prop": split_prop},
                               git_commit)
-        '''
-
-def workflowb(split_prop):
-    with mlflow.start_run() as active_run:
-        load_raw_data_run = mlflow.run(".", "load_raw_data")
-        load_raw_data_run_id = mlflow.tracking.MlflowClient()\
-            .get_run(load_raw_data_run.run_id)
-        loans_csv_uri = os.path.join(load_raw_data_run_id.info.artifact_uri,
-                                     "loans-raw-csv-dir")
-        etl_data_run = mlflow.run(".", "etl_data",
-                                  parameters={"loans_csv_uri": loans_csv_uri})
 
 
 if __name__ == '__main__':
@@ -108,4 +96,4 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--split_prop', default=0.8, type=float)
     args = parser.parse_args()
 
-    workflowb(args.split_prop)
+    workflow(args.split_prop)
