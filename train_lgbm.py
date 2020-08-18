@@ -64,7 +64,6 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop):
                                   n_iter=100,
                                   random_state=seed,
                                   cv=5)
-    mlflow.log_param("features", features)
     mlflow.log_param("split_prop", split_prop)
     # fit and log best estimator
     cvModel = crossval.fit(X_train,
