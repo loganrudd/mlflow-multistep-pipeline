@@ -2,55 +2,161 @@ target:
   - bad_loan
 
 features:
-  - delinq_2yrs
-  - mths_since_last_delinq
-  - addr_state
-  - dti
-  - member_id
   - loan_amnt
-  - id
-  - mths_since_last_record
   - funded_amnt
-  - pub_rec
+  - funded_amnt_inv
+  - int_rate
+  - installment
+  - annual_inc
+  - issue_d
+  - bad_loan
+  - dti
+  - delinq_2yrs
   - earliest_cr_line
   - inq_last_6mths
-  - total_bc_limit
-  - sub_grade
-  - total_bal_ex_mort
-  - pymnt_plan
-  - desc
-  - tax_liens
-  - issue_d
-  - term
-  - home_ownership
-  - total_il_high_credit_limit
-  - revol_bal_joint
-  - annual_inc
-  - tot_hi_cred_lim
-  - verification_status
-  - mo_sin_rcnt_tl
-  - emp_title
-  - mort_acc
-  - revol_bal
-  - total_rec_int
+  - mths_since_last_delinq
+  - mths_since_last_record
   - open_acc
-  - url
+  - pub_rec
+  - revol_bal
   - total_acc
-  - revol_util
-  - title
-  - purpose
-  - zip_code
-  - initial_list_status
-  - last_pymnt_d
-  - emp_length
-  - mths_since_recent_bc
+  - total_pymnt
+  - total_pymnt_inv
+  - total_rec_prncp
+  - total_rec_int
   - total_rec_late_fee
-  - mths_since_recent_bc_dlq
-  - next_pymnt_d
+  - recoveries
+  - collection_recovery_fee
   - last_pymnt_amnt
-  - mths_since_last_major_derog
-  - last_credit_pull_d
-  - num_bc_sats
+  - pub_rec_bankruptcies
+  - MORTGAGE
+  - NONE
+  - OTHER
+  - OWN
+  - RENT
+  - car
+  - credit_card
+  - debt_consolidation
+  - educational
+  - home_improvement
+  - house
+  - major_purchase
+  - medical
+  - moving
+  - other
+  - renewable_energy
+  - small_business
+  - vacation
+  - wedding
+  - Not Verified
+  - Source Verified
+  - Verified
+  - AK
+  - AL
+  - AR
+  - AZ
+  - CA
+  - CO
+  - CT
+  - DC
+  - DE
+  - FL
+  - GA
+  - HI
+  - IA
+  - ID
+  - IL
+  - IN
+  - KS
+  - KY
+  - LA
+  - MA
+  - MD
+  - ME
+  - MI
+  - MN
+  - MO
+  - MS
+  - MT
+  - NC
+  - NE
+  - NH
+  - NJ
+  - NM
+  - NV
+  - NY
+  - OH
+  - OK
+  - OR
+  - PA
+  - RI
+  - SC
+  - SD
+  - TN
+  - TX
+  - UT
+  - VA
+  - VT
+  - WA
+  - WI
+  - WV
+  - WY
+  - 36 months
+  - 60 months
+  - A
+  - B
+  - C
+  - D
+  - E
+  - F
+  - G
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - B1
+  - B2
+  - B3
+  - B4
+  - B5
+  - C1
+  - C2
+  - C3
+  - C4
+  - C5
+  - D1
+  - D2
+  - D3
+  - D4
+  - D5
+  - E1
+  - E2
+  - E3
+  - E4
+  - E5
+  - F1
+  - F2
+  - F3
+  - F4
+  - F5
+  - G1
+  - G2
+  - G3
+  - G4
+  - G5
+  - 1 year
+  - 10+ years
+  - 2 years
+  - 3 years
+  - 4 years
+  - 5 years
+  - 6 years
+  - 7 years
+  - 8 years
+  - 9 years
+  - < 1 year
+  - credit_length
 
 parameter_space:
   max_depth: [3, 4, 5, 6, 7, 10]

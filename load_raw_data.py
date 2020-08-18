@@ -10,7 +10,7 @@ import argparse
 
 
 def load_raw_data(url):
-    with mlflow.start_run(nested=True) as mlrun:
+    with mlflow.start_run() as mlrun:
         local_dir = tempfile.mkdtemp()
         local_filename = os.path.join(local_dir, "LoanStats3a.csv.zip")
         print("Downloading %s to %s" % (url, local_filename))

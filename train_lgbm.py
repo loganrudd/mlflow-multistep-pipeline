@@ -1,10 +1,10 @@
 import numpy as np
-from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import roc_auc_score
 import argparse
-import pyspark
+import pandas as pd
 import mlflow.sklearn
 import lightgbm as lgb
 import yaml
@@ -30,24 +30,20 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop):
     features = loaded_config['features']
     target = loaded_config['target']
     seed = 7
-    spark = pyspark.sql.SparkSession.builder.getOrCreate()
 
-    loans_df = spark.read.parquet(loans_parquet_uri)
-    train_df, test_df = loans_df.randomSplit(
-        [split_prop, 1 - split_prop], seed=seed)
-    train_df.cache()
-    test_df.cache()
+    loans_df = pd.read_parquet(loans_parquet_uri)
+
+    X = loans_df.drop(target, axis=1)
+    y = loans_df[target]
+    X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                        train_size=split_prop,
+                                                        random_state=seed)
 
 
-    mlflow.log_metric("training_nrows", train_df.count())
-    mlflow.log_metric("test_nrows", test_df.count())
-    print('Training: {0}, test: {1}'.format(train_df.count(),
-                                            test_df.count()))
-    # include target in training data and convert spark DF to pandas DF
-    train_df = train_df.select(features + target).toPandas()
-    # drop bad row
-    #train_df.drop(index=36905, inplace=True)
-    test_df = test_df.select(features + target).toPandas()
+    mlflow.log_metric("training_nrows", len(X_train))
+    mlflow.log_metric("test_nrows", len(X_test))
+    print('Training: {0}, test: {1}'.format(len(X_train), len(X_test)))
+
     lgbm = lgb.LGBMClassifier(n_jobs=2)
     param_space = loaded_config['parameter_space']
     param_grid = {'__max_depth': param_space['max_depth'],
@@ -71,14 +67,14 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop):
     mlflow.log_param("features", features)
     mlflow.log_param("split_prop", split_prop)
     # fit and log best estimator
-    cvModel = crossval.fit(train_df.drop(target, axis=1),
-                           train_df[target].values.ravel())
+    cvModel = crossval.fit(X_train,
+                           y_train.values.ravel())
     mlflow.sklearn.log_model(cvModel.best_estimator_,
                              "best-5-fold-cross-validated-{}" \
                              .format(str(lgbm).split('(')[0]))
-    y_pred = cvModel.best_estimator_.predict(test_df.drop(target, axis=1))
+    y_pred = cvModel.best_estimator_.predict(X_test)
     print('Train ROC: {:.3f}'.format(cvModel.best_score_))
-    test_roc = roc_auc_score(test_df[target], y_pred)
+    test_roc = roc_auc_score(y_test, y_pred)
     print('Test ROC: {:.3f}'.format(test_roc))
     # log metric(s), if multiple can be as a dict
     mlflow.log_metrics({"ROC_AUC_train": cvModel.best_score_,
