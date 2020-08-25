@@ -50,7 +50,7 @@ units:
 
     mlflow run . -P als_max_iter=20 -P keras_hidden_units=50
     
-In Databricks community edition:
+In Databricks community edition (using Databricks runtime version 7.0 ML):
 
 First you need to setup your credentials
 
