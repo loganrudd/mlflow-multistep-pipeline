@@ -52,4 +52,15 @@ units:
     
 In Databricks community edition:
 
-[UNDER CONSTRUCTION]
+First you need to setup your credentials
+
+.. code-block:: python
+
+    token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
+    dbutils.fs.put("file:///root/.databrickscfg","[DEFAULT]\nhost=https://community.cloud.databricks.com\ntoken = "+token,overwrite=True)
+    
+then you can go ahead and execute the project with the MLflow api:
+
+.. code-block:: python
+
+    mlflow.run('git://github.com/loganrudd/mlflow-multistep-pipeline.git')
