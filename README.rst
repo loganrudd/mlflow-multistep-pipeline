@@ -26,7 +26,7 @@ reuse the cached results.
 Running this Example
 ^^^^^^^^^^^^^^^^^^^^
 
-In your local machine:
+**In your local machine**:
 
 In order for the multistep workflow to find the other steps, you must
 execute ``mlflow run`` from this directory. So, in order to find out if
@@ -50,7 +50,7 @@ units:
 
     mlflow run . -P als_max_iter=20 -P keras_hidden_units=50
     
-In Databricks community edition (using Databricks runtime version 7.0 ML):
+**In Databricks community edition** (using Databricks runtime version 7.0 ML):
 
 First you need to setup your credentials
 
