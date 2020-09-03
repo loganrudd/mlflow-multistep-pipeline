@@ -9,7 +9,6 @@ import mlflow.sklearn
 import lightgbm as lgb
 import yaml
 
-
 def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop):
     """
     Helper function that fits a scikit-learn 5-fold cross validated model
@@ -68,8 +67,9 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop):
     cvModel = crossval.fit(X_train,
                            y_train.values.ravel())
     mlflow.sklearn.log_model(cvModel.best_estimator_,
-                             "best-5-fold-cross-validated-{}" \
-                             .format(str(lgbm).split('(')[0]))
+                             "best-5-fold-cross-validated-{}"
+                             .format(str(lgbm).split('(')[0]),
+                             conda_env='conda.yaml')
     y_pred = cvModel.best_estimator_.predict(X_test)
     print('Train ROC: {:.3f}'.format(cvModel.best_score_))
     test_roc = roc_auc_score(y_test, y_pred)
