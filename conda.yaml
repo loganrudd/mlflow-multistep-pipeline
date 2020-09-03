@@ -6,6 +6,7 @@ dependencies:
   - pandas>=1.0.0
   - scikit-learn=0.20.1
   - pip
+  - nomkl
   - pip:
     - mlflow
     - pyarrow

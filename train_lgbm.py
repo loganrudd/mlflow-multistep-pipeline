@@ -44,7 +44,7 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop):
     mlflow.log_metric("test_nrows", len(X_test))
     print('Training: {0}, test: {1}'.format(len(X_train), len(X_test)))
 
-    lgbm = lgb.LGBMClassifier(n_jobs=-1)
+    lgbm = lgb.LGBMClassifier()
     param_space = loaded_config['parameter_space']
     param_grid = {'__max_depth': param_space['max_depth'],
                   '__min_split_gain': param_space['gamma'],
@@ -60,7 +60,6 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop):
     crossval = RandomizedSearchCV(pipeline,
                                   param_grid,
                                   scoring='roc_auc',
-                                  n_jobs=-1,
                                   n_iter=100,
                                   random_state=seed,
                                   cv=5)
