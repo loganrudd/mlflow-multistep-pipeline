@@ -10,7 +10,7 @@ import numpy as np
 
 
 def etl_data(loans_csv_uri):
-    with mlflow.start_run(nested=True) as mlrun:
+    with mlflow.start_run() as mlrun:
         tmpdir = tempfile.mkdtemp()
         loans_parquet_dir = os.path.join(tmpdir, 'loans.parquet')
         print("Processing ratings CSV %s to Parquet %s" % (loans_csv_uri,
