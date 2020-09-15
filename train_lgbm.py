@@ -9,7 +9,8 @@ import mlflow.sklearn
 import lightgbm as lgb
 import yaml
 
-def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop):
+def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop,
+                               max_depth, num_leaves, learning_rate):
     """
     Helper function that fits a scikit-learn 5-fold cross validated model
     to predict a binary label `target` on the passed-in training DataFrame
@@ -45,12 +46,12 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop):
 
     lgbm = lgb.LGBMClassifier()
     param_space = loaded_config['parameter_space']
-    param_grid = {'__max_depth': param_space['max_depth'],
+    param_grid = {'__max_depth': [max_depth],
                   '__min_split_gain': param_space['gamma'],
                   '__min_child_weight': param_space['min_child_weight'],
-                  '__learning_rate': param_space['learning_rate'],
+                  '__learning_rate': [learning_rate],
                   '__colsample_bytree': param_space['colsample_bytree'],
-                  '__num_leaves': param_space['num_leaves']
+                  '__num_leaves': [num_leaves]
                   }
     # define pipeline and initialize RandomizedSearchCV
     steps = [('imputation', SimpleImputer()),
@@ -88,8 +89,14 @@ if __name__ == '__main__':
     parser.add_argument("-u", "--loans_parquet_uri")
     parser.add_argument("-c", "--config", default="config.yaml")
     parser.add_argument("-s", "--split_prop", default=0.8, type=float)
+    parser.add_argument("-d", "--max_depth", type=int)
+    parser.add_argument("-n", "--num_leaves", type=int)
+    parser.add_argument("-l", "--learning_rate", type=float)
     args = parser.parse_args()
 
     fit_sklearn_crossvalidator(args.loans_parquet_uri,
                                args.config,
-                               args.split_prop)
+                               args.split_prop,
+                               args.max_depth,
+                               args.num_leaves,
+                               args.learning_rate)

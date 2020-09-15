@@ -69,7 +69,7 @@ def _get_or_run(entrypoint, parameters, git_commit, use_cache=True):
 
 
 
-def workflow(split_prop):
+def workflow(split_prop, max_depth, num_leaves, learning_rate):
     # Note: The entrypoint names are defined in MLproject. The artifact directories
     # are documented by each step's .py file.
     with mlflow.start_run() as active_run:
@@ -86,14 +86,23 @@ def workflow(split_prop):
                                          "loans-processed-parquet-dir")
 
         train_lgbm = _get_or_run("train_lgbm",
-                              {"loans_parquet_uri": loans_parquet_uri,
-                               "split_prop": split_prop},
-                              git_commit)
+                                 {"loans_parquet_uri": loans_parquet_uri,
+                                  "split_prop": split_prop,
+                                  "max_depth": max_depth,
+                                  "learning_rate": learning_rate},
+                                 git_commit)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--split_prop', default=0.8, type=float)
+    parser.add_argument("-d", "--max_depth", type=int)
+    parser.add_argument("-n", "--num_leaves", type=int)
+    parser.add_argument("-l", "--learning_rate", type=float)
     args = parser.parse_args()
 
-    workflow(args.split_prop)
+    workflow(args.split_prop,
+             args.max_depth,
+             args.num_leaves,
+             args.learning_rate
+             )
