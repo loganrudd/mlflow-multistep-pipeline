@@ -7,7 +7,9 @@ dependencies:
   - scikit-learn=0.20.1
   - pip
   - nomkl
+  - fsspec
   - pip:
+    - dvc
     - mlflow
     - pyarrow
     - lightgbm
