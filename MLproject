@@ -9,7 +9,7 @@ entry_points:
   etl_data:
     parameters:
       loans_csv_uri: path
-    command: "dvc run -n etl_data -d etl_data.py -d data/interim/loans.csv -o data/processed/loans.parquet 'python etl_data.py --loans_csv_uri {loans_csv_uri}' "
+    command: "dvc run -n etl_data -d etl_data.py -d data/interim/loans.csv -o data/processed/loans.parquet 'python etl_data.py' "
 
   train_lgbm:
     parameters:
@@ -17,7 +17,7 @@ entry_points:
       config:
         type: path
         default: config.yaml
-    command: "dvc run -n train_lgbm -d train_lgbm.py -d data/processed/loans.parquet -d config.yaml 'python train_lgbm.py --loans_parquet_uri {loans_parquet_uri} --config {config}"
+    command: "dvc run -n train_lgbm -d train_lgbm.py -d data/processed/loans.parquet -d config.yaml 'python train_lgbm.py --config {config}"
 
   main:
     parameters:
