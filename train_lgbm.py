@@ -1,4 +1,3 @@
-import numpy as np
 import os
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
 from sklearn.impute import SimpleImputer
