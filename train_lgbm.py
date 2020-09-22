@@ -1,4 +1,4 @@
-import numpy as np
+import os
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
@@ -9,7 +9,7 @@ import mlflow.sklearn
 import lightgbm as lgb
 import yaml
 
-def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop,
+def fit_sklearn_crossvalidator(config, split_prop,
                                max_depth, num_leaves, learning_rate):
     """
     Helper function that fits a scikit-learn 5-fold cross validated model
@@ -27,11 +27,14 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop,
     with open(config) as f:
         loaded_config = yaml.full_load(f)
 
+    local_dir = os.path.abspath(os.path.dirname(__file__))
+    loans_parquet_uri = os.path.join(local_dir, 'data/processed')
     features = loaded_config['features']
     target = loaded_config['target']
     seed = 7
 
-    loans_df = pd.read_parquet(loans_parquet_uri)
+    loans_parquet = os.path.join(loans_parquet_uri, 'loans.parquet')
+    loans_df = pd.read_parquet(loans_parquet)
 
     X = loans_df[features].drop(target, axis=1)
     y = loans_df[target]
@@ -60,7 +63,7 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop,
     crossval = RandomizedSearchCV(pipeline,
                                   param_grid,
                                   scoring='roc_auc',
-                                  n_iter=100,
+                                  n_iter=50,
                                   random_state=seed,
                                   cv=5)
     mlflow.log_param("split_prop", split_prop)
@@ -94,8 +97,7 @@ if __name__ == '__main__':
     parser.add_argument("-l", "--learning_rate", type=float)
     args = parser.parse_args()
 
-    fit_sklearn_crossvalidator(args.loans_parquet_uri,
-                               args.config,
+    fit_sklearn_crossvalidator(args.config,
                                args.split_prop,
                                args.max_depth,
                                args.num_leaves,

@@ -1,0 +1,21 @@
+stages:
+  load_raw_data:
+    cmd: python load_raw_data.py
+    deps:
+    - load_raw_data.py
+    outs:
+    - data/interim/loans.csv
+    - data/raw/LoanStats3a.csv
+  etl_data:
+    cmd: python etl_data.py
+    deps:
+    - data/interim/loans.csv
+    - etl_data.py
+    outs:
+    - data/processed/loans.parquet
+  train_lgbm:
+    cmd: python train_lgbm.py --config config.yaml
+    deps:
+    - config.yaml
+    - data/processed/loans.parquet
+    - train_lgbm.py

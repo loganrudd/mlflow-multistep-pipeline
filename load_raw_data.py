@@ -10,15 +10,16 @@ import argparse
 
 
 def load_raw_data(url):
-    with mlflow.start_run() as mlrun:
-        local_dir = tempfile.mkdtemp()
+    with mlflow.start_run(run_name='load_raw_data') as mlrun:
+        local_dir = os.path.abspath(os.path.dirname(__file__))
         local_filename = os.path.join(local_dir, "LoanStats3a.csv.zip")
         print("Downloading %s to %s" % (url, local_filename))
-        r = requests.get(url, verify=False, stream=True)
+        result = requests.get(url, verify=False, stream=True)
         with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
+            for chunk in result.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
+
 
         extracted_dir = os.path.join(local_dir, 'data/raw')
         print("Extracting %s into %s" % (local_filename, extracted_dir))
@@ -26,12 +27,12 @@ def load_raw_data(url):
             zip_ref.extractall(extracted_dir)
 
         loans_file = os.path.join(extracted_dir, 'LoanStats3a.csv')
-        print(os.path.exists(loans_file))
         print("Uploading loans: %s" % loans_file)
 
         # remove first line from file to make it easy to read
+        interim_dir = os.path.join(local_dir, 'data/interim')
         with open(loans_file, 'r') as f:
-            new_file = os.path.join(extracted_dir, 'loans.csv')
+            new_file = os.path.join(interim_dir, 'loans.csv')
             with open(new_file, 'w') as f1:
                 next(f)  # skip header line
                 for line in f:
