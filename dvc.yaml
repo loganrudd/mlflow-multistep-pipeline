@@ -1,0 +1,21 @@
+stages:
+  load_raw_data:
+    cmd: python load_raw_data.py
+    deps:
+    - load_raw_data.py
+    outs:
+    - data/interim/loans.csv
+    - data/raw/LoanStats3a.csv
+  etl_data:
+    cmd: python etl_data.py --loans_csv_uri file:///Users/logan.rudd/Work/repos/mlflow-multistep-pipeline/data/interim
+    deps:
+    - data/interim/loans.csv
+    - etl_data.py
+    outs:
+    - data/processed/loans.parquet
+  train_lgbm:
+    cmd: python train_lgbm.py --loans_parquet_uri file:///Users/logan.rudd/Work/repos/mlflow-multistep-pipeline/data/processed --config config.yaml
+    deps:
+    - config.yaml
+    - data/processed/loans.parquet
+    - train_lgbm.py
