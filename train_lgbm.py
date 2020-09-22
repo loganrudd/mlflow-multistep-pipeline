@@ -33,7 +33,7 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop,
 
     loans_df = pd.read_parquet(loans_parquet_uri)
 
-    X = loans_df.drop(target, axis=1)
+    X = loans_df[features].drop(target, axis=1)
     y = loans_df[target]
     X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                         train_size=split_prop,
