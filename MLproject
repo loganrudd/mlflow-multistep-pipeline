@@ -4,12 +4,12 @@ conda_env: conda.yaml
 
 entry_points:
   load_raw_data:
-    command: "python load_raw_data.py"
+    command: "dvc run -n load_raw_data -d load_raw_data.py -o data/raw/LoanStats3a.csv -o data/interim/loans.csv 'python load_raw_data.py'"
 
   etl_data:
     parameters:
       loans_csv_uri: path
-    command: "python etl_data.py --loans_csv_uri {loans_csv_uri}"
+    command: "dvc run -n etl_data -d etl_data.py -d data/interim/loans.csv -o data/processed/loans.parquet 'python etl_data.py --loans_csv_uri {loans_csv_uri}' "
 
   train_lgbm:
     parameters:
@@ -17,13 +17,10 @@ entry_points:
       config:
         type: path
         default: config.yaml
-    command: "python train_lgbm.py --loans_parquet_uri {loans_parquet_uri} --config {config}"
+    command: "dvc run -n train_lgbm -d train_lgbm.py -d data/processed/loans.parquet -d config.yaml 'python train_lgbm.py --loans_parquet_uri {loans_parquet_uri} --config {config}"
 
   main:
     parameters:
       split_prop: {type: float, default: 0.8}
-      max_depth: {type: int, default: 6}
-      learning_rate: {type: float, default: 0.1}
-      num_leaves: {type: int, default: 100}
-    command: "python main.py --split_prop {split_prop} --max_depth {max_depth} --learning_rate {learning_rate} --num_leaves {num_leaves}"
+    command: "dvc repro"
 
