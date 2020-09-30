@@ -1,0 +1,14 @@
+name: Auto-merge workflow
+on: pull_request_review
+jobs:
+  labelWhenApprovedAndAutomerge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: label-when-approved-and-automerge
+        uses: pullreminders/label-when-approved-action
+        uses: pascalgn/automerge-action@v0.11.0
+    env:
+      APPROVALS: "1"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ADD_LABEL: "Aprobado"
+      MERGE_LABELS: "Aprobado"
