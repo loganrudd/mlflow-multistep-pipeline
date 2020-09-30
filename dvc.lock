@@ -2,7 +2,7 @@ load_raw_data:
   cmd: python load_raw_data.py
   deps:
   - path: load_raw_data.py
-    md5: 7133571182925d327e83aa3aa6fb987d
+    md5: d4932a4f2860a6f49052f4c0e5bb2eec
   outs:
   - path: data/interim/loans.csv
     md5: 6b1f67e7ce31f3bca19c927ba591525f
