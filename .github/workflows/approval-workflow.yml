@@ -4,7 +4,7 @@ jobs:
   labelWhenApprovedAndAutomerge:
     runs-on: ubuntu-latest
     steps:
-      - name: labelWhenApproved
+      - name: label-When-Approved
         uses: pullreminders/label-when-approved-action@master
         env:
           APPROVALS: "0"
