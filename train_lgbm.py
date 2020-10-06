@@ -1,4 +1,4 @@
-import numpy as np
+import os
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
@@ -31,7 +31,8 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop,
     target = loaded_config['target']
     seed = 7
 
-    loans_df = pd.read_parquet(loans_parquet_uri)
+    loans_parquet = os.path.join(loans_parquet_uri, 'loans.parquet')
+    loans_df = pd.read_parquet(loans_parquet)
 
     X = loans_df[features].drop(target, axis=1)
     y = loans_df[target]
@@ -60,7 +61,7 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop,
     crossval = RandomizedSearchCV(pipeline,
                                   param_grid,
                                   scoring='roc_auc',
-                                  n_iter=100,
+                                  n_iter=50,
                                   random_state=seed,
                                   cv=5)
     mlflow.log_param("split_prop", split_prop)
