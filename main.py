@@ -89,6 +89,7 @@ def workflow(split_prop, max_depth, num_leaves, learning_rate):
                                  {"loans_parquet_uri": loans_parquet_uri,
                                   "split_prop": split_prop,
                                   "max_depth": max_depth,
+                                  "num_leaves": num_leaves,
                                   "learning_rate": learning_rate},
                                  git_commit)
 
