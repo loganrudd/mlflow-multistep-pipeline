@@ -9,7 +9,7 @@ import mlflow.sklearn
 import lightgbm as lgb
 import yaml
 
-def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop,
+def fit_sklearn_crossvalidator(config, split_prop,
                                max_depth, num_leaves, learning_rate):
     """
     Helper function that fits a scikit-learn 5-fold cross validated model
@@ -27,6 +27,8 @@ def fit_sklearn_crossvalidator(loans_parquet_uri, config, split_prop,
     with open(config) as f:
         loaded_config = yaml.full_load(f)
 
+    local_dir = os.path.abspath(os.path.dirname(__file__))
+    loans_parquet_uri = os.path.join(local_dir, 'data/processed')
     features = loaded_config['features']
     target = loaded_config['target']
     seed = 7
@@ -95,8 +97,7 @@ if __name__ == '__main__':
     parser.add_argument("-l", "--learning_rate", type=float)
     args = parser.parse_args()
 
-    fit_sklearn_crossvalidator(args.loans_parquet_uri,
-                               args.config,
+    fit_sklearn_crossvalidator(args.config,
                                args.split_prop,
                                args.max_depth,
                                args.num_leaves,

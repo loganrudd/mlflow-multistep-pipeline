@@ -7,14 +7,22 @@ stages:
     - data/interim/loans.csv
     - data/raw/LoanStats3a.csv
   etl_data:
+<<<<<<< HEAD
     cmd: python etl_data.py --loans_csv_uri file:///Users/logan.rudd/Work/repos/mlflow-multistep-pipeline/data/interim
+=======
+    cmd: python etl_data.py
+>>>>>>> 284353076ea1c07c8507bb71c3781eb9487f4ab4
     deps:
     - data/interim/loans.csv
     - etl_data.py
     outs:
     - data/processed/loans.parquet
   train_lgbm:
+<<<<<<< HEAD
     cmd: python train_lgbm.py --loans_parquet_uri file:///Users/logan.rudd/Work/repos/mlflow-multistep-pipeline/data/processed --config config.yaml
+=======
+    cmd: python train_lgbm.py --config config.yaml
+>>>>>>> 284353076ea1c07c8507bb71c3781eb9487f4ab4
     deps:
     - config.yaml
     - data/processed/loans.parquet

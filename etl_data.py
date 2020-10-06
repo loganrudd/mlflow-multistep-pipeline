@@ -9,9 +9,11 @@ import pandas as pd
 import numpy as np
 
 
-def etl_data(loans_csv_uri):
+
+def etl_data():
     with mlflow.start_run(run_name='etl_data') as mlrun:
         local_dir = os.path.abspath(os.path.dirname(__file__))
+        loans_csv_uri = os.path.join(local_dir, 'data/interim')
         loans_parquet_dir = os.path.join(local_dir,
                                          'data/processed/loans.parquet')
         print("Processing ratings CSV %s to Parquet %s" % (loans_csv_uri,
@@ -78,4 +80,4 @@ if __name__ == '__main__':
     parser.add_argument("-u", "--loans_csv_uri")
     args = parser.parse_args()
 
-    etl_data(args.loans_csv_uri)
+    etl_data()

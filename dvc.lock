@@ -9,22 +9,38 @@ load_raw_data:
   - path: data/raw/LoanStats3a.csv
     md5: e860be3c042b76f0417f992f83f903d9
 etl_data:
+<<<<<<< HEAD
   cmd: python etl_data.py --loans_csv_uri file:///Users/logan.rudd/Work/repos/mlflow-multistep-pipeline/data/interim
+=======
+  cmd: python etl_data.py
+>>>>>>> 284353076ea1c07c8507bb71c3781eb9487f4ab4
   deps:
   - path: data/interim/loans.csv
     md5: 6b1f67e7ce31f3bca19c927ba591525f
   - path: etl_data.py
+<<<<<<< HEAD
     md5: 1e8280267ff47118d44a4fcbccd58efc
+=======
+    md5: b1b35db8019dfb2534ab13c22ea7f3e7
+>>>>>>> 284353076ea1c07c8507bb71c3781eb9487f4ab4
   outs:
   - path: data/processed/loans.parquet
     md5: a897fb332e3ab9768aaf14a5474f9226
 train_lgbm:
+<<<<<<< HEAD
   cmd: python train_lgbm.py --loans_parquet_uri file:///Users/logan.rudd/Work/repos/mlflow-multistep-pipeline/data/processed
     --config config.yaml
+=======
+  cmd: python train_lgbm.py --config config.yaml
+>>>>>>> 284353076ea1c07c8507bb71c3781eb9487f4ab4
   deps:
   - path: config.yaml
     md5: fc2d0bc0290e26c9038b9540c33a6be6
   - path: data/processed/loans.parquet
     md5: a897fb332e3ab9768aaf14a5474f9226
   - path: train_lgbm.py
+<<<<<<< HEAD
     md5: ad0256aa782e87c01777ad7b4acc0ffa
+=======
+    md5: 28d3a3cf872816f995df8e9c7c975252
+>>>>>>> 284353076ea1c07c8507bb71c3781eb9487f4ab4
