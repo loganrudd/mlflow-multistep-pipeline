@@ -10,6 +10,7 @@ dependencies:
   - fsspec
   - pip:
     - dvc
+    - urllib3
     - mlflow
     - pyarrow
     - lightgbm
