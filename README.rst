@@ -50,7 +50,7 @@ units:
 
     mlflow run . -P als_max_iter=20 -P keras_hidden_units=50
     
-**In Databricks community edition** (using Databricks runtime version 7.0 ML):
+**In Databricks community edition** (developed on Databricks runtime version 7.0 ML, tested with 7.3 LTS ML):
 
 First you need to setup your credentials
 
@@ -63,4 +63,7 @@ then you can go ahead and execute the project with the MLflow api:
 
 .. code-block:: python
 
+    import mlflow
     mlflow.run('git://github.com/loganrudd/mlflow-multistep-pipeline.git')
+
+then take a look at the 'Experiment' tab to see the logged results of the run!
