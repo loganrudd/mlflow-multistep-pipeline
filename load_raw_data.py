@@ -1,5 +1,5 @@
 """
-Downloads the MovieLens dataset and saves it as an artifact
+Downloads the LoanStats dataset and saves it as an artifact
 """
 import requests
 import tempfile
