@@ -1,7 +1,9 @@
 Multistep Workflow Example
 --------------------------
-This multistep workflow was modified from the original example to run inside of a Databricks notebook.
-Most of this readme remains from the original example, but includes added support for Databricks.
+This multistep workflow was modified from the original [MLflow multistep workflow 
+example](https://github.com/mlflow/mlflow/tree/master/examples/multistep_workflow)
+to predict loan default using 5-fold cross validation and also was made to be compatible 
+to run inside of a Databricks notebook.
 
 
 There are three steps to this workflow:
@@ -28,27 +30,26 @@ Running this Example
 
 **In your local machine**:
 
+First create a [Conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html) 
+environment with python=3.7 from conda.yaml file and activate:
+
+`conda env create -n <name_of_env> -f conda.yaml python=3.7`
+`conda activate <name_of_env>`
+
 In order for the multistep workflow to find the other steps, you must
-execute ``mlflow run`` from this directory. So, in order to find out if
-the Keras model does in fact improve upon the ALS model, you can simply
-run:
+execute ``mlflow run`` from this directory.
 
 .. code-block:: bash
-
-    cd examples/multistep_workflow
+    
+    git clone git@github.com:loganrudd/mlflow-multistep-pipeline.git
+    cd mlflow-multistep-pipeline/
     mlflow run .
 
 
-This downloads and transforms the MovieLens dataset, trains an ALS 
-model, and then trains a Keras model -- you can compare the results by 
-using ``mlflow ui``.
+This downloads and transforms the LendingClub dataset, processes features, and trains an LGBMClassifier 
+model -- you can look at the details of the model, params, metrics, etc. that result from this pipeline by running ``mlflow ui``.
 
-You can also try changing the number of ALS iterations or Keras hidden
-units:
-
-.. code-block:: bash
-
-    mlflow run . -P als_max_iter=20 -P keras_hidden_units=50
+You can also try changing the parameter grids in the config.yaml to search through when tuning hyperparameters.
     
 **In Databricks community edition** (developed on Databricks runtime version 7.0 ML, tested with 7.3 LTS ML):
 
