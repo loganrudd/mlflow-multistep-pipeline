@@ -15,6 +15,7 @@ features:
   - last_pymnt_amnt
   - total_pymnt
   - total_pymnt_inv
+  - total_rec_prncp
   - pub_rec_bankruptcies
   - MORTGAGE
   - NONE
