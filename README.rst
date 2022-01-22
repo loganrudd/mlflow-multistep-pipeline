@@ -34,6 +34,7 @@ First create a [Conda](https://conda.io/projects/conda/en/latest/user-guide/gett
 environment with python=3.7 from conda.yaml file and activate:
 
 .. code-block:: bash
+
     conda env create -n <name_of_env> -f conda.yaml python=3.7
     conda activate <name_of_env>
 
