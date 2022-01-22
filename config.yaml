@@ -20,9 +20,6 @@ features:
   - pub_rec
   - revol_bal
   - total_acc
-  - total_pymnt
-  - total_pymnt_inv
-  - total_rec_prncp
   - total_rec_int
   - total_rec_late_fee
   - recoveries
