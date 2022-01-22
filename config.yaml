@@ -9,7 +9,6 @@ features:
   - bad_loan
   - earliest_cr_line
   - inq_last_6mths
-  - recoveries
   - last_pymnt_amnt
   - pub_rec_bankruptcies
   - MORTGAGE
