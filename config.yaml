@@ -7,8 +7,10 @@ features:
   - annual_inc
   - issue_d
   - bad_loan
+  - delinq_2yrs
   - earliest_cr_line
   - inq_last_6mths
+  - recoveries
   - last_pymnt_amnt
   - pub_rec_bankruptcies
   - MORTGAGE
