@@ -13,6 +13,8 @@ features:
   - mths_since_last_delinq
   - mths_since_last_record
   - last_pymnt_amnt
+  - total_pymnt
+  - total_pymnt_inv
   - pub_rec_bankruptcies
   - MORTGAGE
   - NONE
@@ -141,8 +143,8 @@ features:
   - credit_length
 
 parameter_space:
-  max_depth: [3, 4, 5, 6]
-  num_leaves: [8, 16, 32, 64, 128]
+  max_depth: [3, 4, 5, 6, 7]
+  num_leaves: [8, 16, 32, 64, 80, 100]
   learning_rate: [0.01, 0.05, 0.10, 0.15]
   min_child_weight: [1, 3, 5, 7]
   gamma: [0.1, 0.2, 0.3, 0.5]
