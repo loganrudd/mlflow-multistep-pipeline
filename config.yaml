@@ -3,8 +3,6 @@ target:
 
 features:
   - loan_amnt
-  - funded_amnt
-  - funded_amnt_inv
   - int_rate
   - installment
   - annual_inc
