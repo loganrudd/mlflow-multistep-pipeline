@@ -25,23 +25,18 @@ Additionally, this run will attempt to determine if a sub-run has
 already been executed successfully with the same parameters and, if so,
 reuse the cached results.
 
-Running this Example
-^^^^^^^^^^^^^^^^^^^^
+### Running this Example
 
 **In your local machine**:
 
 First create a [Conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html) 
 environment with python=3.7 from conda.yaml file and activate:
 
-.. code-block:: bash
-
     conda env create -n <name_of_env> -f conda.yaml python=3.7
     conda activate <name_of_env>
 
 In order for the multistep workflow to find the other steps, you must
 execute ``mlflow run`` from this directory.
-
-.. code-block:: bash
     
     git clone git@github.com:loganrudd/mlflow-multistep-pipeline.git
     cd mlflow-multistep-pipeline/
@@ -57,14 +52,10 @@ You can also try changing the parameter grids in the config.yaml to search throu
 
 First you need to setup your credentials
 
-.. code-block:: python
-
     token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
     dbutils.fs.put("file:///root/.databrickscfg","[DEFAULT]\nhost=https://community.cloud.databricks.com\ntoken = "+token,overwrite=True)
     
 then you can go ahead and execute the project with the MLflow api:
-
-.. code-block:: python
 
     import mlflow
     mlflow.run('git://github.com/loganrudd/mlflow-multistep-pipeline.git')
